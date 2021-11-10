@@ -1,4 +1,6 @@
 ﻿    using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using ODataOrders.Data;
 using System;
@@ -8,9 +10,7 @@ using System.Threading.Tasks;
 
 namespace ODataOrders.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ODataOrdersController : ControllerBase
+    public class ODataOrdersController : ODataController
     {
         private readonly ODataOrdersContext context;
 
@@ -19,10 +19,10 @@ namespace ODataOrders.Controllers
             this.context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [EnableQuery]
+        public IActionResult Get()
         {
-            return Ok(await context.Orders.ToArrayAsync());
+            return Ok(context.Orders);
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace ODataOrders.Controllers
         {
             context.Orders.Add(or);
             await context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAll), new { Id = or.Id }, or); 
+            return CreatedAtAction(nameof(Get), new { Id = or.Id }, or); 
         }
 
 

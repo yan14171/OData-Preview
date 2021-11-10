@@ -30,9 +30,10 @@ namespace ODataOrders
             services.AddDbContext<ODataOrdersContext>(options => options.UseSqlServer(
                Configuration["ConnectionStrings:DefaultConnection"]));
               
-            services.AddControllers();
+            services.AddControllers()
+                .AddOData(pot => pot.Filter().Expand().Select().OrderBy()
+              .AddRouteComponents("odata", GetEdmModel()));
 
-            services.AddODataQueryFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +59,7 @@ namespace ODataOrders
         private static IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Customer>("ODataOrders"); // Must be the same as Controller name [Name]Controller
+            builder.EntitySet<Order>("ODataOrders"); // Must be the same as Controller name [Name]Controller
 
             return builder.GetEdmModel();
         }
